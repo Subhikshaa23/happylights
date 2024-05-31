@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subhikshaa's Blog</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .blog-form {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .blog-form input, .blog-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .blog-form button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .blog-posts {
+            margin: 20px 0;
+        }
+        .blog-post {
+            background: #fff;
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .blog-post h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .blog-post p {
+            margin: 10px 0 0;
+        }
+        .blog-post button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .blog-post button.edit {
+            right: 80px;
+            background: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Subhikshaa's Blog</h1>
+    </header>
+    <div class="container">
+        <div class="blog-form">
+            <input type="text" id="title" placeholder="Blog Title">
+            <textarea id="content" rows="5" placeholder="Blog Content"></textarea>
+            <button onclick="addBlogPost()">Add Blog Post</button>
+        </div>
+        <div class="blog-posts" id="blog-posts"></div>
+    </div>
+    
+    <script>
+        let blogPosts = [];
+        let editIndex = -1;
+
+        function displayBlogPosts() {
+            const blogPostsContainer = document.getElementById('blog-posts');
+            blogPostsContainer.innerHTML = '';
+            blogPosts.forEach((post, index) => {
+                blogPostsContainer.innerHTML += `
+                    <div class="blog-post">
+                        <h2>${post.title}</h2>
+                        <p>${post.content}</p>
+                        <button onclick="deleteBlogPost(${index})">Delete</button>
+                        <button class="edit" onclick="editBlogPost(${index})">Edit</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addBlogPost() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            if (editIndex === -1) {
+                blogPosts.push({ title, content });
+            } else {
+                blogPosts[editIndex] = { title, content };
+                editIndex = -1;
+            }
+
+            document.getElementById('title').value = '';
+            document.getElementById('content').value = '';
+            displayBlogPosts();
+        }
+
+        function deleteBlogPost(index) {
+            blogPosts.splice(index, 1);
+            displayBlogPosts();
+        }
+
+        function editBlogPost(index) {
+            document.getElementById('title').value = blogPosts[index].title;
+            document.getElementById('content').value = blogPosts[index].content;
+            editIndex = index;
+        }
+    </script>
+</body>
+</html>
