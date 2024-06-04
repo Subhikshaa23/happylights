@@ -1,0 +1,51 @@
+/* Common styles shared across multiple HTML files */
+
+/* Body styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container styles */
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+/* Header styles */
+header {
+    background: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+/* Blog post styles */
+.blog-posts {
+    margin: 20px 0;
+}
+
+.blog-post {
+    background: #fff;
+    margin: 10px 0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.blog-post h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.blog-post p {
+    margin: 10px 0 0;
+}
