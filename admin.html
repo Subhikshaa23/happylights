@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subhikshaa's Blog Admin</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .blog-form {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .blog-form input, .blog-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .blog-form button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .blog-posts {
+            margin: 20px 0;
+        }
+        .blog-post {
+            background: #fff;
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .blog-post h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .blog-post p {
+            margin: 10px 0 0;
+        }
+        .blog-post button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .blog-post button.edit {
+            right: 80px;
+            background: #ff9800;
+        }
+        .toast {
+            visibility: hidden;
+            max-width: 50%;
+            margin: auto;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            right: 0;
+            bottom: 30px;
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;} 
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;} 
+            to {bottom: 0; opacity: 0;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Subhikshaa's Blog Admin</h1>
+    </header>
+    <div class="container">
+        <div class="blog-form">
+            <input type="text" id="title" placeholder="Blog Title">
+            <textarea id="content" rows="5" placeholder="Blog Content"></textarea>
+            <button id="submit-button" onclick="addOrUpdateBlogPost()">Add Blog Post</button>
+        </div>
+        <div class="blog-posts" id="blog-posts"></div>
+    </div>
+    <div id="toast" class="toast">Please fill out both the title and content fields.</div>
+
+    <script>
+        let blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+        let editIndex = -1;
+
+        function displayBlogPosts() {
+            const blogPostsContainer = document.getElementById('blog-posts');
+            blogPostsContainer.innerHTML = '';
+            blogPosts.forEach((post, index) => {
+                blogPostsContainer.innerHTML += `
+                    <div class="blog-post">
+                        <h2>${post.title}</h2>
+                        <p>${post.content}</p>
+                        <p><small>${new Date(post.timestamp).toLocaleString()}</small></p>
+                        <button onclick="deleteBlogPost(${index})">Delete</button>
+                        <button class="edit" onclick="editBlogPost(${index})">Edit</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addOrUpdateBlogPost() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            if (!title || !content) {
+                showToast("Please fill out both the title and content fields.");
+                return;
+            }
+
+            const timestamp = new Date().getTime();
+
+            if (editIndex === -1) {
+                blogPosts.push({ title, content, timestamp });
+            } else {
+                blogPosts[editIndex] = { title, content, timestamp };
+                editIndex = -1;
+                document.getElementById('submit-button').innerText = 'Add Blog Post';
+            }
+
+            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+            document.getElementById('title').value = '';
+            document.getElementById('content').value = '';
+            displayBlogPosts();
+        }
+
+        function deleteBlogPost(index) {
+            blogPosts.splice(index, 1);
+            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+            displayBlogPosts();
+        }
+
+        function editBlogPost(index) {
+            document.getElementById('title').value = blogPosts[index].title;
+            document.getElementById('content').value = blogPosts[index].content;
+            editIndex = index;
+            document.getElementById('submit-button').innerText = 'Update Blog Post';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = "toast show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        window.onload = displayBlogPosts;
+    </script>
+</body>
+</html>
