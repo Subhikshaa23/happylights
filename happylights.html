@@ -81,6 +81,43 @@
             right: 80px;
             background: #ff9800;
         }
+        .toast {
+            visibility: hidden;
+            max-width: 50%;
+            margin: auto;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            right: 0;
+            bottom: 30px;
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;} 
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;} 
+            to {bottom: 0; opacity: 0;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
     </style>
 </head>
 <body>
@@ -91,11 +128,12 @@
         <div class="blog-form">
             <input type="text" id="title" placeholder="Blog Title">
             <textarea id="content" rows="5" placeholder="Blog Content"></textarea>
-            <button onclick="addBlogPost()">Add Blog Post</button>
+            <button id="submit-button" onclick="addOrUpdateBlogPost()">Add Blog Post</button>
         </div>
         <div class="blog-posts" id="blog-posts"></div>
     </div>
-    
+    <div id="toast" class="toast">Please fill out both the title and content fields.</div>
+
     <script>
         let blogPosts = [];
         let editIndex = -1;
@@ -115,15 +153,21 @@
             });
         }
 
-        function addBlogPost() {
+        function addOrUpdateBlogPost() {
             const title = document.getElementById('title').value;
             const content = document.getElementById('content').value;
+
+            if (!title || !content) {
+                showToast("Please fill out both the title and content fields.");
+                return;
+            }
 
             if (editIndex === -1) {
                 blogPosts.push({ title, content });
             } else {
                 blogPosts[editIndex] = { title, content };
                 editIndex = -1;
+                document.getElementById('submit-button').innerText = 'Add Blog Post';
             }
 
             document.getElementById('title').value = '';
@@ -140,6 +184,14 @@
             document.getElementById('title').value = blogPosts[index].title;
             document.getElementById('content').value = blogPosts[index].content;
             editIndex = index;
+            document.getElementById('submit-button').innerText = 'Update Blog Post';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = "toast show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
         }
     </script>
 </body>
