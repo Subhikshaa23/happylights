@@ -135,8 +135,14 @@
     <div id="toast" class="toast">Please fill out both the title and content fields.</div>
 
     <script>
-        let blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+        let blogPosts = [];
         let editIndex = -1;
+
+        async function fetchBlogPosts() {
+            const response = await fetch('/posts');
+            blogPosts = await response.json();
+            displayBlogPosts();
+        }
 
         function displayBlogPosts() {
             const blogPostsContainer = document.getElementById('blog-posts');
@@ -154,7 +160,7 @@
             });
         }
 
-        function addOrUpdateBlogPost() {
+        async function addOrUpdateBlogPost() {
             const title = document.getElementById('title').value;
             const content = document.getElementById('content').value;
 
@@ -173,15 +179,15 @@
                 document.getElementById('submit-button').innerText = 'Add Blog Post';
             }
 
-            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+            await saveBlogPosts();
             document.getElementById('title').value = '';
             document.getElementById('content').value = '';
             displayBlogPosts();
         }
 
-        function deleteBlogPost(index) {
+        async function deleteBlogPost(index) {
             blogPosts.splice(index, 1);
-            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+            await saveBlogPosts();
             displayBlogPosts();
         }
 
@@ -192,6 +198,14 @@
             document.getElementById('submit-button').innerText = 'Update Blog Post';
         }
 
+        async function saveBlogPosts() {
+            await fetch('/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(blogPosts)
+            });
+        }
+
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.innerText = message;
@@ -199,7 +213,7 @@
             setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
         }
 
-        window.onload = displayBlogPosts;
+        window.onload = fetchBlogPosts;
     </script>
 </body>
 </html>

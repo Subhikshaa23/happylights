@@ -35,7 +35,6 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
         }
         .blog-post h2 {
             margin: 0;
@@ -55,8 +54,9 @@
     </div>
     
     <script>
-        function displayBlogPosts() {
-            const blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+        async function fetchBlogPosts() {
+            const response = await fetch('/posts');
+            const blogPosts = await response.json();
             const blogPostsContainer = document.getElementById('blog-posts');
             blogPostsContainer.innerHTML = '';
             blogPosts.forEach(post => {
@@ -70,7 +70,7 @@
             });
         }
 
-        window.onload = displayBlogPosts;
+        window.onload = fetchBlogPosts;
     </script>
 </body>
 </html>
