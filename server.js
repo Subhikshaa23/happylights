@@ -7,20 +7,40 @@ const port = 3000;
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
+// Middleware to parse URL-encoded bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route for the default homepage '/'
-app.get('/', (req, res) => {
-    var pathToSite = path.join(__dirname, 'public', 'happylights.html');
-    // console.log(`${pathToSite}`);
-    res.sendFile(pathToSite);
-});
+// Password for admin access (change this to your desired password)
+const adminPassword = 'insta';
+
+// Middleware to check password for '/admin' route
+const checkAdminPassword = (req, res, next) => {
+    const { password } = req.body;
+
+    if (password === adminPassword) {
+        next(); 
+    } else {
+        res.redirect('/admin?auth=failed');
+    }
+};
 
 // Route for the '/admin' page
 app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// POST route to handle login form submission
+app.post('/admin', checkAdminPassword, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Route for the default homepage '/'
+app.get('/', (req, res) => {
+    // console.log("Request received for /");
+    res.sendFile(path.join(__dirname, 'public', 'happylights.html'));
 });
 
 // Endpoint to get posts
