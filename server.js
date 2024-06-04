@@ -2,8 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
 const app = express();
-const port = 3000;
+
+
+dotenv.config();
+const port = process.env.PORT;
+const adminPassword = process.env.ADMIN_PASSWORD;
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
@@ -12,9 +22,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Password for admin access (change this to your desired password)
-const adminPassword = 'insta';
 
 // Middleware to check password for '/admin' route
 const checkAdminPassword = (req, res, next) => {
